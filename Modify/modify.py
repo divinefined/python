@@ -5,14 +5,14 @@ class My_list(list):
 
     def __sub__(self, other):
         if isinstance(other, My_list):
-            return My_list(item for item in self if item not in other)
+            return My_list(*(item for item in self if item not in other))
         else:
-            return My_list(item - other for item in self)
+            return My_list(*(item - other for item in self))
 
     def __truediv__(self, divisor):
         if divisor == 0:
             raise ValueError("Division by zero is not allowed.")
-        return My_list(item / divisor for item in self)
+        return My_list(*(item / divisor for item in self))
 
     def __str__(self):
         original_str = super().__str__()
