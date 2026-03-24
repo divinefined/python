@@ -7,6 +7,7 @@ class Tamagotchi:
         self.hunger = 100
         self.happiness = 100
         self.is_alive = True
+        self.lock = threading.RLock()
 
     def feed(self, food):
         with self.lock:    
@@ -31,18 +32,25 @@ class Tamagotchi:
             else:
                 print(f"{self.name} мертв(а)")
 
+    def _check_status(self):
+        """Внутренний метод - вызывается уже под защитой lock"""
+        if self.hunger == 0 or self.happiness == 0:
+            self.is_alive = False
+            print(f"{self.name} умер(ла)")
+
     def check_status(self):
+        """Публичный метод - захватывает lock"""
         with self.lock:
-            if self.hunger == 0 or self.happiness == 0:
-                self.is_alive = False
-                print(f"{self.name} умер(ла)")
+            self._check_status()
 
     def live(self):
-        while self.is_alive:
+        while True:
             with self.lock:
+                if not self.is_alive:
+                    break
                 self.hunger -= 10
                 self.happiness -= 10
-                self.check_status()
+                self._check_status()
             time.sleep(10)
 
 def main():
@@ -51,18 +59,37 @@ def main():
     live_threard = threading.Thread(target=tamagotchi.live)
     live_threard.start()
 
-    while tamagotchi.is_alive:
+    while True:
+        with tamagotchi.lock:
+            if not tamagotchi.is_alive:
+                break
+        
         command = input("Введите команду (feed, play): ")
         if command == "feed":
-            food = int(input("Введите количество еды: "))
-            tamagotchi.feed(food)
+            try:
+                food = int(input("Введите количество еды: "))
+                if food <= 0:
+                    print("Количество еды должно быть больше 0!")
+                    continue
+                tamagotchi.feed(food)
+            except ValueError:
+                print("Пожалуйста, введите число!")
+                continue
         elif command == "play":
-            fun = int(input("Введите количество времени: "))
-            tamagotchi.play(fun)
+            try:
+                fun = int(input("Введите количество времени: "))
+                if fun <= 0:
+                    print("Время игры должно быть больше 0!")
+                    continue
+                tamagotchi.play(fun)
+            except ValueError:
+                print("Пожалуйста, введите число!")
+                continue
         else:
             print("Неизвестная команда")
         tamagotchi.check_status()
-        print("Сытость ", tamagotchi.hunger, "\nРадость: ", tamagotchi.happiness)
+        with tamagotchi.lock:
+            print("Сытость ", tamagotchi.hunger, "\nРадость: ", tamagotchi.happiness)
 
     live_threard.join()
 

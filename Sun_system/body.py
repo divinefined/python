@@ -1,5 +1,6 @@
 import pygame
 import math
+import os
 
 # Константы
 WIDTH, HEIGHT = 1000, 800
@@ -54,15 +55,16 @@ class Planet:
 
 
 # Создание планет
+script_dir = os.path.dirname(os.path.abspath(__file__))
 planets = [
-    Planet("Mercury", 2, 40, 88, 'mercury.png'),
-    Planet("Venus", 4.4, 60, 224.7,  'venus.png'),
-    Planet("Earth", 4.8, 80, 365.2, 'earth.png'),
-    Planet("Mars", 2.4, 100, 686.98, 'mars.png'),
-    Planet("Jupiter", 68.4, 190, 4332.59, 'jupiter.png'),
-    Planet("Saturn", 48, 320, 10759.22, 'saturn.png'),
-    Planet("Uranus", 19.6, 400, 30688.5, 'uranus.png'),
-    Planet("Neptune", 5.2, 450, 60182, 'neptune.png'),
+    Planet("Mercury", 2, 40, 88, os.path.join(script_dir, 'mercury.png')),
+    Planet("Venus", 4.4, 60, 224.7, os.path.join(script_dir, 'venus.png')),
+    Planet("Earth", 4.8, 80, 365.2, os.path.join(script_dir, 'earth.png')),
+    Planet("Mars", 2.4, 100, 686.98, os.path.join(script_dir, 'mars.png')),
+    Planet("Jupiter", 68.4, 190, 4332.59, os.path.join(script_dir, 'jupiter.png')),
+    Planet("Saturn", 48, 320, 10759.22, os.path.join(script_dir, 'saturn.png')),
+    Planet("Uranus", 19.6, 400, 30688.5, os.path.join(script_dir, 'uranus.png')),
+    Planet("Neptune", 5.2, 450, 60182, os.path.join(script_dir, 'neptune.png')),
 ]
 
 # Счетчик дней
@@ -92,7 +94,5 @@ while running:
     day_text = font.render(f"Day: {day_count}", True, WHITE)
     screen.blit(day_text, (10, 50))
     pygame.display.flip()
-
-    print(planet)
 
 pygame.quit()
